@@ -1,11 +1,13 @@
-import { createStore, applyMiddleware } from 'redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import rootReducer from './store/reducers/rootReducer';
 import { configureStore } from '@reduxjs/toolkit';
-const myMiddleware = (store) => (next) => (action) => {
-  if (action.type === 'ADD_TODOS' && action.data === 'fuck') {
-    action.data = '***';
-  }
-  return next(action);
+const persistConfig = {
+  key: 'root',
+  storage,
 };
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+const store = configureStore({ reducer: persistedReducer });
+let persistor = persistStore(store);
 // export const store = createStore(rootReducer, applyMiddleware(myMiddleware, thunk));
-export const store = configureStore({ reducer: rootReducer });
+export { store, persistor };
